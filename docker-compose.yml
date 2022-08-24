@@ -1,6 +1,22 @@
 version: "3.7"
 services:
+  postgres:
+    environment:
+    - TZ=America/Chicago
+    image: postgres:14.4
+    volumes:
+    - db-data:/var/lib/postgresql/data
+    restart: always
+    # network_mode: host
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
   nzyme:
+    environment:
+    - TZ=America/Chicago
     build: 
       context: nzyme
       args:
@@ -14,18 +30,9 @@ services:
         - NZYME_PASSWORD=${NZYME_PASSWORD}
     depends_on:
       - postgres
-    network_mode: host
+    # network_mode: host
     privileged: true # for allowing channel hopping / setting monitor mode from nzyme
     ports:
-      - "22900:22900"
-
-  postgres:
-    image: postgres:14.4
-    restart: always
-    network_mode: host
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DATABASE}
+     - "22900:22900"
+volumes:
+  db-data:

@@ -4,14 +4,17 @@ FROM debian:buster
 # Update system, install first set of tools
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y wireless-tools wget curl openjdk-11-jre-headless procps usbutils sudo
+RUN apt-get install -y wireless-tools wget curl openjdk-11-jre-headless procps usbutils sudo iproute2
 
 # Running custom steps for nzyme
 RUN apt purge libpcap0.8
-RUN wget http://security.debian.org/debian-security/pool/updates/main/libp/libpcap/libpcap0.8_1.8.1-3+deb9u1_armhf.deb
-RUN dpkg -i libpcap0.8_1.8.1-3+deb9u1_armhf.deb 
-RUN wget https://assets.nzyme.org/releases/nzyme-1.2.2.jar
-RUN mkdir /usr/share/nzyme
+#RUN wget http://security.debian.org/debian-security/pool/updates/main/libp/libpcap/libpcap0.8_1.8.1-3+deb9u1_armhf.deb
+RUN wget http://http.us.debian.org/debian/pool/main/libp/libpcap/libpcap0.8_1.8.1-6+deb10u1_arm64.deb
+#RUN dpkg -i libpcap0.8_1.8.1-3+deb9u1_armhf.deb 
+RUN dpkg -i libpcap0.8_1.8.1-6+deb10u1_arm64.deb
+RUN wget https://assets.nzyme.org/releases/nzyme-1.2.2.deb
+RUN dpkg -i nzyme-1.2.2.deb
+# RUN mkdir /usr/share/nzyme
 
 # Install python3.8 by compiling from source
 RUN apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev
@@ -22,7 +25,7 @@ RUN cd Python-3.8.2 && make -j 4
 RUN cd Python-3.8.2 && make install
 
 # copy over config
-COPY nzyme.conf nzyme.conf
+COPY nzyme.conf /etc/nzyme/nzyme.conf
 COPY log4j2-debian.xml log4j2-debian.xml
 
 # replace config values with arg variables
